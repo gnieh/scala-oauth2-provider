@@ -34,7 +34,7 @@ object ScalaOAuth2Build extends Build {
       name := "scala-oauth2-provider",
       description := "OAuth 2.0 server-side implementation written in Scala"
     )
-  ).aggregate(scalaOAuth2Core, play2OAuth2Provider)
+  ).aggregate(scalaOAuth2Core, play2OAuth2Provider, sprayOAuthProvider)
 
   lazy val scalaOAuth2Core = Project(
     id = "scala-oauth2-core",
@@ -58,6 +58,19 @@ object ScalaOAuth2Build extends Build {
       libraryDependencies ++= Seq(
         "com.typesafe.play" %% "play"      % _playVersion % "provided",
         "com.typesafe.play" %% "play-test" % _playVersion % "test"
+      ) ++ commonDependenciesInTestScope
+    )
+  ) dependsOn(scalaOAuth2Core % "compile->compile;test->test")
+
+  lazy val sprayOAuthProvider = Project(
+    id = "spray-oauth2-provider",
+    base = file("spray-oauth2-provider"),
+    settings = scalaOAuth2ProviderSettings ++ Seq(
+      name := "spray-oauth2-provider",
+      description := "Support scala-oauth2-core library on Spray",
+      resolvers += "Spray.io repository" at "http://repo.spray.io",
+      libraryDependencies ++= Seq(
+        "io.spray" %% "spray-routing" % "1.3.3" % "provided"
       ) ++ commonDependenciesInTestScope
     )
   ) dependsOn(scalaOAuth2Core % "compile->compile;test->test")
